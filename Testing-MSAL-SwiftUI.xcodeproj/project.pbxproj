@@ -3,19 +3,22 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12FC272602B41CEA59ABB58B /* Pods_Testing_MSAL_SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A720C3871EFD9923B12CA73 /* Pods_Testing_MSAL_SwiftUI.framework */; };
 		3E80AA8326D4E4D900C39240 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E80AA8226D4E4D900C39240 /* AppDelegate.swift */; };
 		3E80AA8526D4E4D900C39240 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E80AA8426D4E4D900C39240 /* SceneDelegate.swift */; };
 		3E80AA8726D4E4D900C39240 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E80AA8626D4E4D900C39240 /* ContentView.swift */; };
 		3E80AA8926D4E4DB00C39240 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E80AA8826D4E4DB00C39240 /* Assets.xcassets */; };
 		3E80AA8C26D4E4DB00C39240 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E80AA8B26D4E4DB00C39240 /* Preview Assets.xcassets */; };
 		3E80AA8F26D4E4DB00C39240 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3E80AA8D26D4E4DB00C39240 /* LaunchScreen.storyboard */; };
+		3E80AA9726D4F5EE00C39240 /* MainScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E80AA9626D4F5EE00C39240 /* MainScreenViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		10EC7EDEC7DC3E0C5EAA35CC /* Pods-Testing-MSAL-SwiftUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Testing-MSAL-SwiftUI.debug.xcconfig"; path = "Target Support Files/Pods-Testing-MSAL-SwiftUI/Pods-Testing-MSAL-SwiftUI.debug.xcconfig"; sourceTree = "<group>"; };
 		3E80AA7F26D4E4D900C39240 /* Testing-MSAL-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Testing-MSAL-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E80AA8226D4E4D900C39240 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3E80AA8426D4E4D900C39240 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -24,6 +27,9 @@
 		3E80AA8B26D4E4DB00C39240 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3E80AA8E26D4E4DB00C39240 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3E80AA9026D4E4DB00C39240 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3E80AA9626D4F5EE00C39240 /* MainScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenViewModel.swift; sourceTree = "<group>"; };
+		7A720C3871EFD9923B12CA73 /* Pods_Testing_MSAL_SwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Testing_MSAL_SwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		89D9D9791D1652ABD3A2160F /* Pods-Testing-MSAL-SwiftUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Testing-MSAL-SwiftUI.release.xcconfig"; path = "Target Support Files/Pods-Testing-MSAL-SwiftUI/Pods-Testing-MSAL-SwiftUI.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +37,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12FC272602B41CEA59ABB58B /* Pods_Testing_MSAL_SwiftUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		157A001C6F7944419D827DDC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				10EC7EDEC7DC3E0C5EAA35CC /* Pods-Testing-MSAL-SwiftUI.debug.xcconfig */,
+				89D9D9791D1652ABD3A2160F /* Pods-Testing-MSAL-SwiftUI.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		1C28DA03CB71F56563DB4D9E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7A720C3871EFD9923B12CA73 /* Pods_Testing_MSAL_SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3E80AA7626D4E4D900C39240 = {
 			isa = PBXGroup;
 			children = (
 				3E80AA8126D4E4D900C39240 /* Testing-MSAL-SwiftUI */,
 				3E80AA8026D4E4D900C39240 /* Products */,
+				157A001C6F7944419D827DDC /* Pods */,
+				1C28DA03CB71F56563DB4D9E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,6 +89,7 @@
 				3E80AA8D26D4E4DB00C39240 /* LaunchScreen.storyboard */,
 				3E80AA9026D4E4DB00C39240 /* Info.plist */,
 				3E80AA8A26D4E4DB00C39240 /* Preview Content */,
+				3E80AA9626D4F5EE00C39240 /* MainScreenViewModel.swift */,
 			);
 			path = "Testing-MSAL-SwiftUI";
 			sourceTree = "<group>";
@@ -82,9 +109,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3E80AA9326D4E4DB00C39240 /* Build configuration list for PBXNativeTarget "Testing-MSAL-SwiftUI" */;
 			buildPhases = (
+				F5C5F37B248C1E01D33563C2 /* [CP] Check Pods Manifest.lock */,
 				3E80AA7B26D4E4D900C39240 /* Sources */,
 				3E80AA7C26D4E4D900C39240 /* Frameworks */,
 				3E80AA7D26D4E4D900C39240 /* Resources */,
+				A3E24A65D84CD721B9CCA64C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -140,12 +169,55 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		A3E24A65D84CD721B9CCA64C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Testing-MSAL-SwiftUI/Pods-Testing-MSAL-SwiftUI-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Testing-MSAL-SwiftUI/Pods-Testing-MSAL-SwiftUI-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Testing-MSAL-SwiftUI/Pods-Testing-MSAL-SwiftUI-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F5C5F37B248C1E01D33563C2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Testing-MSAL-SwiftUI-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		3E80AA7B26D4E4D900C39240 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				3E80AA8326D4E4D900C39240 /* AppDelegate.swift in Sources */,
+				3E80AA9726D4F5EE00C39240 /* MainScreenViewModel.swift in Sources */,
 				3E80AA8526D4E4D900C39240 /* SceneDelegate.swift in Sources */,
 				3E80AA8726D4E4D900C39240 /* ContentView.swift in Sources */,
 			);
@@ -283,6 +355,7 @@
 		};
 		3E80AA9426D4E4DB00C39240 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 10EC7EDEC7DC3E0C5EAA35CC /* Pods-Testing-MSAL-SwiftUI.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -304,6 +377,7 @@
 		};
 		3E80AA9526D4E4DB00C39240 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89D9D9791D1652ABD3A2160F /* Pods-Testing-MSAL-SwiftUI.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
