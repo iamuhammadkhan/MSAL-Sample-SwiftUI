@@ -8,7 +8,7 @@
 import SwiftUI
 import MSAL
 
-class MainScreenViewModel: NSObject, URLSessionDelegate {
+final class MainScreenViewModel: NSObject, ObservableObject, URLSessionDelegate {
     
     private let kTenantName = "fabrikamb2c.onmicrosoft.com" // Your tenant name
     private let kAuthorityHostName = "fabrikamb2c.b2clogin.com" // Your authority host name
@@ -21,12 +21,43 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
     
     // DO NOT CHANGE - This is the format of OIDC Token and Authorization endpoints for Azure AD B2C.
     private let kEndpoint = "https://%@/tfp/%@/%@"
-    private lazy var application: MSALPublicClientApplication! = nil
-    private lazy var accessToken: String? = nil
-    lazy var updateLoggingText = ""
-    
-    func getRootView() -> UIViewController {
-        return UIApplication.shared.windows.first!.rootViewController!
+    private var application: MSALPublicClientApplication?
+    private var accessToken: String?
+
+    /// Drives the log panel in ContentView.
+    ///
+    /// Must be `@Published` on an `ObservableObject`: SwiftUI redraws in
+    /// response to a publisher, not to a plain property being assigned. Without
+    /// it the panel renders once and never changes, which makes the whole
+    /// sample look broken.
+    @Published var loggingText = ""
+
+    /// Append a line to the log panel, on the main queue.
+    ///
+    /// MSAL's completion handlers are not guaranteed to run on the main thread,
+    /// and publishing a change from a background thread is undefined behaviour
+    /// in SwiftUI. Funnelling every write through here is the fix.
+    private func log(_ message: String) {
+        if Thread.isMainThread {
+            loggingText = message
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.loggingText = message
+            }
+        }
+    }
+
+    /// The view controller MSAL presents its web view from.
+    ///
+    /// `UIApplication.shared.windows` is deprecated since iOS 15; the scene API
+    /// replaces it. Returns nil rather than force-unwrapping, because a nil
+    /// root view controller is a normal state during launch and backgrounding.
+    func getRootView() -> UIViewController? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .rootViewController
     }
     
     func initializeMSAL() {
@@ -47,7 +78,7 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
             pcaConfig.knownAuthorities = [siginPolicyAuthority, editProfileAuthority]
             self.application = try MSALPublicClientApplication(configuration: pcaConfig)
         } catch {
-            self.updateLoggingText = "Unable to create application \(error)"
+            self.log("Unable to create application \(error)")
         }
     }
     
@@ -71,20 +102,28 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
              - completionBlock: The completion block that will be called when the authentication
              flow completes, or encounters an error.
              */
-            let webViewParameters = MSALWebviewParameters(authPresentationViewController: getRootView())
+            guard let application = application else {
+                self.log("MSAL is not initialised yet.")
+                return
+            }
+            guard let presenter = getRootView() else {
+                self.log("No view controller available to present the sign-in web view.")
+                return
+            }
+            let webViewParameters = MSALWebviewParameters(authPresentationViewController: presenter)
             let parameters = MSALInteractiveTokenParameters(scopes: kScopes, webviewParameters: webViewParameters)
             parameters.promptType = .selectAccount
             parameters.authority = authority
             application.acquireToken(with: parameters) { (result, error) in
                 guard let result = result else {
-                    self.updateLoggingText = "Could not acquire token: \(error ?? "No error informarion" as! Error)"
+                    self.log("Could not acquire token: \(error?.localizedDescription ?? "no error information returned")")
                     return
                 }
                 self.accessToken = result.accessToken
-                self.updateLoggingText = "Access token is \(self.accessToken ?? "Empty")"
+                self.log("Access token is \(self.accessToken ?? "Empty")")
             }
         } catch {
-            self.updateLoggingText = "Unable to create authority \(error)"
+            self.log("Unable to create authority \(error)")
         }
     }
     
@@ -108,21 +147,29 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
              - completionBlock: The completion block that will be called when the authentication
              flow completes, or encounters an error.
              */
+            guard let application = application else {
+                self.log("MSAL is not initialised yet.")
+                return
+            }
+            guard let presenter = getRootView() else {
+                self.log("No view controller available to present the sign-in web view.")
+                return
+            }
             let thisAccount = try self.getAccountByPolicy(withAccounts: application.allAccounts(), policy: kEditProfilePolicy)
-            let webViewParameters = MSALWebviewParameters(authPresentationViewController: getRootView())
+            let webViewParameters = MSALWebviewParameters(authPresentationViewController: presenter)
             let parameters = MSALInteractiveTokenParameters(scopes: kScopes, webviewParameters: webViewParameters)
             parameters.authority = authority
             parameters.account = thisAccount
-            
+
             application.acquireToken(with: parameters) { (result, error) in
                 if let error = error {
-                    self.updateLoggingText = "Could not edit profile: \(error)"
+                    self.log("Could not edit profile: \(error)")
                 } else {
-                    self.updateLoggingText = "Successfully edited profile"
+                    self.log("Successfully edited profile")
                 }
             }
         } catch {
-            self.updateLoggingText = "Unable to construct parameters before calling acquire token \(error)"
+            self.log("Unable to construct parameters before calling acquire token \(error)")
         }
     }
     
@@ -148,13 +195,17 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
              - completionBlock: The completion block that will be called when the authentication
              flow completes, or encounters an error.
              */
+            guard let application = application else {
+                self.log("MSAL is not initialised yet.")
+                return
+            }
             guard let thisAccount = try self.getAccountByPolicy(withAccounts: application.allAccounts(), policy: kSignupOrSigninPolicy) else {
-                self.updateLoggingText = "There is no account available!"
+                self.log("There is no account available!")
                 return
             }
             let parameters = MSALSilentTokenParameters(scopes: kScopes, account:thisAccount)
             parameters.authority = authority
-            self.application.acquireTokenSilent(with: parameters) { (result, error) in
+            application.acquireTokenSilent(with: parameters) { (result, error) in
                 if let error = error {
                     let nsError = error as NSError
                     // interactionRequired means we need to ask the user to sign-in. This usually happens
@@ -164,39 +215,48 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
                         if (nsError.code == MSALError.interactionRequired.rawValue) {
                             // Notice we supply the account here. This ensures we acquire token for the same account
                             // as we originally authenticated.
-                            let webviewParameters = MSALWebviewParameters(authPresentationViewController: self.getRootView())
-                            let parameters = MSALInteractiveTokenParameters(scopes: self.kScopes, webviewParameters: webviewParameters)
-                            parameters.account = thisAccount
-                            self.application.acquireToken(with: parameters) { (result, error) in
-                                guard let result = result else {
-                                    self.updateLoggingText = "Could not acquire new token: \(error ?? "No error informarion" as! Error)"
+                            // This completion handler is not guaranteed to be
+                            // on the main thread, and presenting UI — or even
+                            // reading UIApplication.connectedScenes — has to be.
+                            DispatchQueue.main.async {
+                                guard let presenter = self.getRootView() else {
+                                    self.log("No view controller available to present the sign-in web view.")
                                     return
                                 }
-                                self.accessToken = result.accessToken
-                                self.updateLoggingText = "Access token is \(self.accessToken ?? "empty")"
+                                let webviewParameters = MSALWebviewParameters(authPresentationViewController: presenter)
+                                let parameters = MSALInteractiveTokenParameters(scopes: self.kScopes, webviewParameters: webviewParameters)
+                                parameters.account = thisAccount
+                                application.acquireToken(with: parameters) { (result, error) in
+                                    guard let result = result else {
+                                        self.log("Could not acquire new token: \(error?.localizedDescription ?? "no error information returned")")
+                                        return
+                                    }
+                                    self.accessToken = result.accessToken
+                                    self.log("Access token is \(self.accessToken ?? "empty")")
+                                }
                             }
                             return
                         }
                     }
-                    self.updateLoggingText = "Could not acquire token: \(error)"
+                    self.log("Could not acquire token: \(error)")
                     return
                 }
                 guard let result = result else {
-                    self.updateLoggingText = "Could not acquire token: No result returned"
+                    self.log("Could not acquire token: No result returned")
                     return
                 }
                 self.accessToken = result.accessToken
-                self.updateLoggingText = "Refreshing token silently"
-                self.updateLoggingText = "Refreshed access token is \(self.accessToken ?? "empty")"
+                self.log("Refreshing token silently")
+                self.log("Refreshed access token is \(self.accessToken ?? "empty")")
             }
         } catch {
-            self.updateLoggingText = "Unable to construct parameters before calling acquire token \(error)"
+            self.log("Unable to construct parameters before calling acquire token \(error)")
         }
     }
     
     func callApi() {
         guard let accessToken = self.accessToken else {
-            self.updateLoggingText = "Operation failed because could not find an access token!"
+            self.log("Operation failed because could not find an access token!")
             return
         }
         let sessionConfig = URLSessionConfiguration.default
@@ -205,18 +265,18 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
         var request = URLRequest(url: url!)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         let urlSession = URLSession(configuration: sessionConfig, delegate: self, delegateQueue: OperationQueue.main)
-        self.updateLoggingText = "Calling the API...."
+        self.log("Calling the API....")
         urlSession.dataTask(with: request) { data, response, error in
             guard let validData = data else {
-                self.updateLoggingText = "Could not call API: \(error ?? "No error informarion" as! Error)"
+                self.log("Could not call API: \(error?.localizedDescription ?? "no error information returned")")
                 return
             }
             let result = try? JSONSerialization.jsonObject(with: validData, options: [])
             guard let validResult = result as? [String: Any] else {
-                self.updateLoggingText = "Nothing returned from API"
+                self.log("Nothing returned from API")
                 return
             }
-            self.updateLoggingText = "API response: \(validResult.debugDescription)"
+            self.log("API response: \(validResult.debugDescription)")
         }.resume()
     }
     
@@ -226,15 +286,22 @@ class MainScreenViewModel: NSObject, URLSessionDelegate {
              Removes all tokens from the cache for this application for the provided account
              - account:    The account to remove from the cache
              */
-            let thisAccount = try self.getAccountByPolicy(withAccounts: application.allAccounts(), policy: kSignupOrSigninPolicy)
-            if let accountToRemove = thisAccount {
-                try application.remove(accountToRemove)
-            } else {
-                self.updateLoggingText = "There is no account to signing out!"
+            guard let application = application else {
+                self.log("MSAL is not initialised yet.")
+                return
             }
-            self.updateLoggingText = "Signed out"
+            let thisAccount = try self.getAccountByPolicy(withAccounts: application.allAccounts(), policy: kSignupOrSigninPolicy)
+            guard let accountToRemove = thisAccount else {
+                // Previously this logged "no account" and then immediately
+                // logged "Signed out" anyway, which reads as success.
+                self.log("There is no account to sign out.")
+                return
+            }
+            try application.remove(accountToRemove)
+            self.accessToken = nil
+            self.log("Signed out")
         } catch  {
-            self.updateLoggingText = "Received error signing out: \(error)"
+            self.log("Received error signing out: \(error)")
         }
     }
     

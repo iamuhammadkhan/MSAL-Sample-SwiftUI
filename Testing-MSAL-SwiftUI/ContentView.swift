@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    
-    let viewModel = MainScreenViewModel()
-    
-    init() {
-        viewModel.initializeMSAL()
-    }
+
+    // @StateObject, not `let`: SwiftUI has to own the object and subscribe to
+    // its publisher, or changes to `loggingText` never reach the view. A plain
+    // `let` compiles and silently gives you a log panel that never updates.
+    @StateObject private var viewModel = MainScreenViewModel()
     
     var body: some View {
         VStack {
@@ -59,11 +58,14 @@ struct ContentView: View {
             VStack(alignment: .leading) {
                 Text("Logging").padding()
                 GeometryReader { geo in
-                    Text(viewModel.updateLoggingText)
+                    Text(viewModel.loggingText)
                         .padding()
                         .frame(width: geo.size.width, height: geo.size.width, alignment: .topLeading)
                 }
             }
+        }
+        .onAppear {
+            viewModel.initializeMSAL()
         }
     }
 }
