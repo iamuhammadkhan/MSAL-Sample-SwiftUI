@@ -1,4 +1,4 @@
-# MSAL Sample — SwiftUI
+# MSAL Sample, SwiftUI
 
 A working Azure AD B2C sign-in sample for iOS, in **SwiftUI**. Sign up or sign in against a B2C user flow, get an access token, call a protected API with it, refresh it, edit the profile, and sign out.
 
@@ -15,7 +15,7 @@ pod install          # Pods are committed, so this is optional
 open Testing-MSAL-SwiftUI.xcworkspace
 ```
 
-Open the **workspace**, not the project. Build and run — it works out of the box, because it is wired to Microsoft's public demo tenant (`fabrikamb2c.onmicrosoft.com`). No Azure account needed to try it.
+Open the **workspace**, not the project. Build and run: it works out of the box, because it is wired to Microsoft's public demo tenant (`fabrikamb2c.onmicrosoft.com`). No Azure account needed to try it.
 
 Requires iOS 14+ and Xcode 13+.
 
@@ -38,7 +38,7 @@ Then update the URL scheme in [`Info.plist`](Testing-MSAL-SwiftUI/Info.plist) to
 
 ## The parts of B2C that trip people up
 
-**A "policy" is a whole user flow, not a setting.** B2C hands you a hosted UI per flow — sign-up/sign-in, edit profile, reset password — and each one is a separate authority URL. That is why there are three policy constants above and not one.
+**A "policy" is a whole user flow, not a setting.** B2C hands you a hosted UI per flow (sign-up/sign-in, edit profile, reset password) and each one is a separate authority URL. That is why there are three policy constants above and not one.
 
 **The authority URL encodes the policy:**
 
@@ -48,7 +48,7 @@ https://<host>/tfp/<tenant>/<policy>
 
 Every token call has to target the authority for the flow it belongs to. Calling `acquireToken` against the sign-in authority and then expecting an edit-profile result is a common early mistake.
 
-**Silent first, interactive as fallback.** `acquireTokenSilent` uses the cached refresh token and shows no UI. When it fails with `MSALError.interactionRequired` — expired refresh token, changed password, revoked consent — you fall back to `acquireToken`, which presents the web view. `refreshToken()` in the view model shows the full pattern.
+**Silent first, interactive as fallback.** `acquireTokenSilent` uses the cached refresh token and shows no UI. When it fails with `MSALError.interactionRequired` (expired refresh token, changed password, revoked consent), you fall back to `acquireToken`, which presents the web view. `refreshToken()` in the view model shows the full pattern.
 
 **Password reset arrives as an error, not a flow.** B2C signals "this user asked to reset their password" by failing the sign-in with a specific error code, which you catch and answer by launching the reset policy.
 

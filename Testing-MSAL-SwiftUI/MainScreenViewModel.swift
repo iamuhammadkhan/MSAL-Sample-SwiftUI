@@ -216,8 +216,8 @@ final class MainScreenViewModel: NSObject, ObservableObject, URLSessionDelegate 
                             // Notice we supply the account here. This ensures we acquire token for the same account
                             // as we originally authenticated.
                             // This completion handler is not guaranteed to be
-                            // on the main thread, and presenting UI — or even
-                            // reading UIApplication.connectedScenes — has to be.
+                            // on the main thread, and presenting UI, or even
+                            // reading UIApplication.connectedScenes, has to be.
                             DispatchQueue.main.async {
                                 guard let presenter = self.getRootView() else {
                                     self.log("No view controller available to present the sign-in web view.")
